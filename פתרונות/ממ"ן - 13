@@ -1,0 +1,412 @@
+
+/**
+ * This class represents a collection of array that contains objects of Box3D type.
+ * @author   (Bat-Zion Rafailov)
+ * @version      (20.4.19)
+ */
+public class Collection
+{
+    // instance variables
+    private Box3D[] _boxes;
+    private int _noOfBoxes;
+
+    public final int MAX_NUM_BOXES = 100;
+
+    /**
+     * Constructor for objects of class Collection that initialize the array to contain the maximum nunber of boxes
+     * and the number of boxes to be 0.
+     */
+    public Collection()
+    {
+        // initialise instance variables
+        _boxes = new Box3D[MAX_NUM_BOXES];
+        _noOfBoxes = 0;
+    }
+
+    /**
+     * This method adds objects of box3d type to an array by a particular order, from the smallest box volume to the largest and 
+     * returns true if there is enough place for another box, false otherwise.
+     * @param      Point3D p.
+     * @param      int length.
+     * @param      int width.
+     * @param      int height.
+     * @return     true - if there is enough place for another box, false otherwise.* 
+     */
+    public boolean addBox(Point3D p, int length, int width, int height)
+    {
+        Box3D b = new Box3D (p, length, width, height); 
+
+        if (_noOfBoxes == MAX_NUM_BOXES)
+        { 
+            return false;
+        }
+
+        if (_noOfBoxes == 0){
+            _boxes[_noOfBoxes++] = b; 
+            return true;
+        }
+        
+        int vol_curr = 0;
+        int b_vol = b.getVolume();
+        // The position to which we want to insert the new box
+        int pos = _noOfBoxes; 
+        for (int i = 0; i < _noOfBoxes; i++ )
+        {
+           vol_curr = _boxes[i].getVolume();
+           if (b_vol <= vol_curr)
+           {
+               pos = i;
+               break;
+           }
+        }
+        
+        for (int j = _noOfBoxes -1; j >= pos; j--)
+        {
+            _boxes[j+1] = _boxes[j];
+        }
+
+        _boxes[pos] = b;
+        _noOfBoxes++;
+        
+        return true;
+
+    }
+
+    /**This method returns the box that has the  most upper base corner in the array. Returns null if the array is empty.
+     * If ther are some most upper base corners, returns the first one of them.
+     * @return     Box3D - the box that has the most upper base corner. 
+     * */
+    public Box3D mostUpperBaseCorner() 
+    {
+        if (_noOfBoxes == 0)
+        {
+            return null;
+        }  
+
+        double z_curr;
+        Point3D p_curr = new Point3D();
+        Box3D b_curr = new Box3D();
+        Point3D p_largest = _boxes[0].getBase();
+        double z_largest = p_largest.getZ();
+        Box3D b_largst = _boxes[0];
+        for ( int i = 1; i < _noOfBoxes; i++)
+        {
+            p_curr = _boxes[i].getBase();
+            z_curr = p_curr.getZ(); 
+            b_curr = _boxes[i];
+            if ( z_curr > z_largest)
+            {
+                z_largest =  z_curr; 
+                p_largest =  p_curr; 
+                b_largst = b_curr;
+                
+            }
+        }
+
+        return b_largst;
+    }
+
+    /**This method calculates the total surface area of all the boxes in the array.
+     *@return     int -the summary of the total surface area of all the boxes in the array.
+     * */
+    public int totalSurfaceArea()
+    {
+        int tot_sur_face_area = 0;
+        for ( int i = 0; i < _noOfBoxes; i++) tot_sur_face_area += _boxes[i].getSurfaceArea();
+
+        return  tot_sur_face_area;
+    }
+
+     /**This method returns the longest distance between two boxes centers in the array.  
+     * @return     int -the longest distance between two boxes centers in the array.  
+     * */
+    public double longestDistance()
+    {
+        double longest_dis = 0;
+        for ( int i = 0; i < _noOfBoxes; i++)
+        {
+
+            for ( int j = i + 1; j < _noOfBoxes; j++)
+            {
+                if (_boxes[i].distance(_boxes[j]) > longest_dis)
+                {
+                    longest_dis = _boxes[i].distance(_boxes[j]);
+                }
+            } 
+        }
+
+        return longest_dis;
+    }
+
+    
+     /**This method returns the maximum number of boxes in the array that can contain the given box. 
+     * @return     int - the maximum number of boxes in the array that can contain the given box.   
+     * */
+     public int howManyContains(Box3D b)
+     {
+        int how_many = 0;
+
+        for ( int i = 0; i < _noOfBoxes; i++)
+        {
+            if (_boxes[i].contains(b) == true)
+            {
+                how_many +=  1 ;
+            }
+        }
+        return  how_many;
+    }
+
+     /**This method returns the volume of the smallest that can contain all the boxes in the array between the indexes i and j, 
+      * including them.
+      * @param      int i index in the array
+      * @param      int j index in the array
+      * @return     int - the volume of the smallest that can contain all the boxes in the array between the indexes i and j.   
+      * */
+      public int volumeOfSmallestBox (int i, int j)
+      {
+        if (i < 0 || j < 0 || i > j || j > _noOfBoxes)
+        {
+            return 0;
+        }
+        int max_length = 0; 
+        int max_width = 0; 
+        int max_height = 0; 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+        for (int k = i; k <= j; k++)
+        {
+            if (_boxes[k].getLength() > max_length)
+            {
+                max_length = _boxes[k].getLength();  
+            }
+            
+            if ( _boxes[k].getWidth() > max_width)
+            {
+                max_width = _boxes[k].getWidth();
+            } 
+            
+            if (_boxes[k].getHeight() > max_height)
+            {
+                max_height = _boxes[k].getHeight();
+            } 
+            
+        }
+        return  (max_length + 1) * (max_width  + 1) * (max_height  + 1);
+    }
+
+     /**This method retuns an array that includs the actual number of boxes in the array, and that has in it a copy of every box object 
+     * in the array 
+     * @return     an array that includs the actual number of boxes in the array, and a copy of every box   
+     * */
+    public Box3D[] getBoxes()
+    {
+        Box3D[] _otherBoxes = new Box3D[_noOfBoxes];
+        for (int i = 0; i < _noOfBoxes; i++)  _otherBoxes[i] =  new Box3D(_boxes[i]);
+
+        return _otherBoxes;
+    }
+
+     /**This method retuns the number of boxes in the array 
+     * @return     int - the number of boxes in the array   
+     * */
+    public int getNumOfBoxes()
+    {
+        return _noOfBoxes;
+    }
+
+     /**This method retuns a string representation of this array , each box in a separate line.
+     * @return     String - a string  representation of this array  
+     * */
+    public String toString()
+    {
+        String output = "";
+        for (int i = 0; i < _noOfBoxes; i++){
+            output += "Box no. " + (i +1) + ": " +  _boxes[i].toString() + "\n";
+        }
+        return output;
+    }
+}
+
+*********************************************************************************************************************
+
+
+/**
+ * This class represents two-dimensional array.
+ *
+ * @author Bat-Zion Rafailov
+ * @version 20.4.19
+ */
+public class Matrix
+{
+
+    // instance variables
+    private int[][] _array;
+
+    public final int MAX_NUM_IN_ARRAY = 255;
+    public final int MIN_NUM_IN_ARRAY = 0;
+
+    /**
+     * Constructors a Matrix from two-dimensional array, initialize the dimensions as well as the values of this Matrix to be the same
+     * as the dimensions  and values of the two-dimensional array
+     * @param   int[][] _array - a given two-dimensional array
+     */
+    public Matrix(int[][] array)
+    {
+        // initialise instance variables
+        _array = new int [array.length][array[0].length];
+        for (int i = 0; i < _array.length; i++){
+            for (int j = 0; j < _array[0].length; j++)
+            {
+                _array[i][j] = array[i][j];
+
+            } 
+        }
+    }
+
+    /**
+     * Constructors a size1 by size2 Matrix of ziroes.
+     * @param   int size1
+     * @param   int size2
+     */
+    public Matrix(int size1, int size2)
+    {
+        // initialise instance variables
+        _array = new int[size1][size2];
+        for (int i = 0; i < _array.length; i++){
+            for (int j = 0; j < _array[0].length; j++)
+            {
+                _array[i][j] = MIN_NUM_IN_ARRAY;
+
+            } 
+        }
+    }
+
+    /**This method retuns a string representation of this two-dimensional array.
+     * @return     String - a string  representation of this this two-dimensional array  
+     * */
+    public String toString()
+    {
+        String output = "";
+        for (int i = 0; i < _array.length; i++){
+
+            output +=  _array[i][0];
+            for (int j =1; j < _array[0].length; j++)
+            {
+                output +=  "\t" + _array[i][j];
+
+            } 
+            output += "\n";
+        }         
+        return output;
+
+    }
+
+    /**This method retuns a new Matrix of negativ values, in other words each negativ number is a delision of the MAX_NUM_IN_ARRAY by 
+     * the original value.   
+     * @return     Matrix - a new Matrix that contains two-dimensional array of negativ values
+     * */
+    public Matrix makeNegative()
+    {
+        int value = 0;
+        int value_negative = MAX_NUM_IN_ARRAY - value;
+        int [][] negative_array = new int[_array.length][_array[0].length];
+        for (int i = 0; i < _array.length; i++){
+            for (int j = 0; j < _array[0].length; j++)
+            {
+                value = _array[i][j];
+                value_negative = MAX_NUM_IN_ARRAY - _array[i][j];
+                negative_array[i][j] = value_negative;
+            }
+        }
+
+        return new Matrix(negative_array);
+    }
+
+    /**This method callculates the average of each value and all the valuse that surrounds it in the two-dimensional array,
+     * and returns a new Matrix that inculds the new values.
+     * @return     Matrix - a new Matrix of averages.
+     * */
+    public Matrix imageFilterAverage() 
+    {
+
+        int[][]  array_avg = new int [_array.length][_array[0].length] ;
+        int h_min;
+        int h_max;
+        int w_min;
+        int w_max;
+        int temp;
+        int num_of_elements;
+        for (int i = 0; i < _array.length; i++)
+        {
+            for (int j = 0; j < _array[0].length; j++)
+            {
+                //calculating the up_left_corner
+                h_min = i - 1;
+                h_max = i + 1;
+                w_min = j - 1;
+                w_max = j + 1;
+                temp = 0;
+                
+                if (h_min < 0) h_min = 0;
+
+                if (h_max >= _array.length) h_max = _array.length -1;
+
+                if (w_min < 0) w_min = 0;
+
+                if (w_max >= _array[0].length) w_max = _array[0].length - 1;
+                
+                for (int k = h_min; k <= h_max; k++)
+                {
+                    for (int n = w_min; n <= w_max; n++)
+                    {
+                            //System.out.println("[k n]=[" + k + " " + n + "] [h_min h_max]=[" + h_min + " " + h_max + "]");
+                            temp += _array[k][n];
+                       
+                    }
+                }
+                num_of_elements = (h_max - h_min + 1)*(w_max - w_min + 1);
+                array_avg[i][j] = temp/ num_of_elements;
+            }
+        }
+
+        return new Matrix(array_avg); 
+    }
+
+    /**This method rotates the avlues in the two-dimensional array clockwise, and returns a new Matrix of two-dimensional array.
+     * @return    a new Matrix of the new two-dimensional array.
+     * */
+    public Matrix rotateClockwise() 
+    {
+        int h = _array.length;
+        int w = _array[0].length;
+        int [][] array_clockwise = new int [w][h];
+        for (int i = 0; i < array_clockwise.length; i++)
+        {
+            for (int j = 0; j < array_clockwise[0].length ; j++)
+            {
+                array_clockwise[i][j] = _array[h-j-1][i];
+            }
+        }
+        return new Matrix(array_clockwise);
+    }
+
+    /**This method rotates the avlues in the two-dimensional array against clockwise, and returns a new Matrix of two-dimensional array.
+     * @return    a new Matrix of the new two-dimensional array.
+     * */
+    public Matrix rotateCounterClockwise() 
+    {
+        int h = _array.length;
+        int w = _array[0].length;
+
+        int [][] array_anti_clockwise = new int [w][h];
+        for (int i = 0; i < array_anti_clockwise.length; i++)
+        {
+            for (int j = 0; j < array_anti_clockwise[0].length ; j++)
+            {
+                array_anti_clockwise[i][j] = _array[j][w-i-1];
+
+            }
+        }
+        return new Matrix(array_anti_clockwise);
+    }
+
+}
