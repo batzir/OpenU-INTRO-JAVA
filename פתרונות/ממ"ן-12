@@ -210,9 +210,260 @@ public class Point3D
         double dis = Math.sqrt(Math.pow(p.getX()- _x,2)+ Math.pow(p.getY() - _y,2)+ Math.pow (p.getZ() - _z,2));
         return dis;
     }
+   
+}
 
-    
-    
-    
-    
+****************************************************************************************************************
+
+
+/**
+ * This class represents a three-dimensional box The box is represented by its lower-left-front point and three integers for
+ * the length (x axis), width (y axis) and height (z axis) of the box. the box dimensions must be equal or greater than 1.
+ * @author   (Bat-Zion Rafailov)
+ * @version      (6.4.19)
+ */
+public class Box3D
+{
+    // instance variables
+    private Point3D _base;
+    private int _length;
+    private int _width;
+    private int _height;    
+	
+    /** 
+     * 
+     * Constructs and initializes a box with a default base point and all dimensions to 1.
+     */    
+    public Box3D(){
+        _length = 1;
+        _width = 1;
+        _height = 1;
+        _base = new Point3D();
+    }
+
+    /** 
+     * 
+     * The copy constructs and initializes a Box3D object from a given Box3D.
+     * @param    other the box to copy from. Contains the initialization of the base point and all dimentions.
+     */
+    public Box3D(Box3D other){
+        _length = other.getLength(); 
+        _width = other.getWidth();
+        _height = other.getHeight();
+        _base = new Point3D(other.getBase());
+
+    }
+    /** 
+     * 
+     * Constructs and initializes a box object from a given base point and 3 integers as the dimentions of the Box.
+     * @param    p the base point of the box
+     * @param    length the length of the box
+     * @param    width the width of the box
+     * @param    height the height of the box
+     */ 
+    public Box3D (Point3D p, int length, int width, int height){
+        if (length < 0 || width <0 || height <0){
+            length =1;
+            width =1;
+            height =1;
+        }
+        _length = length;
+        _width = width;
+        _height = height;
+        _base = new Point3D (p);
+    }
+
+    /** This method returns the length dimension
+     * @return    the length of the box
+     */
+    public int getLength(){
+        return _length; 
+    }
+
+    /**
+     * This method Sets the length of the box only if the given value is equal or greater than 1.
+     * @param   num the length to set
+     */
+    public void setLength(int num){
+        if (num > 0){
+            this._length = num;
+        }
+    } 
+
+    /** This method returns the width dimension
+     * @return    the width of the box
+     */
+    public int getWidth(){
+        return _width; 
+    }
+
+    /**
+     * This method Sets the width of the box only if the given value is equal or greater than 1.
+     * @param   num the width to set
+     */
+    public void setWidth(int num){
+        if (num > 0){
+            this._width = num;
+        }
+    }
+
+    /** 
+     * This method returns the height dimension
+     * @return    the height of the box
+     */
+    public int getHeight(){
+        return _height; 
+    }
+
+    /**
+     * This method Sets the height of the box only if the given value is equal or greater than 1.
+     * @param   num the height to set
+     */
+    public void setHeight(int num){
+        if (num > 0){
+            this._height = num;
+        }
+    }
+
+    /** 
+     * This method returns the lower-left-front (base) Point3D of the box
+     * @return    the base point of the box
+     */
+    public Point3D getBase(){
+        return new Point3D(_base); 
+    } 
+
+    /**
+     * This method Sets the base point of the box.
+     * @param   p the Point3D to set
+     */
+    public void setBase(Point3D p){
+
+        this._base = new Point3D(p);
+
+    } 
+
+    /**
+     * This method returns a string representation of this Box3D object.
+     * @return   a string representation of this Box3D object.
+     */
+    public String toString(){ 
+        return "The base point is " + _base.toString() + ", length = " +_length +", width = "+_width +", height = " +_height;
+    }
+
+    /**
+     * This method determines whether or not the two boxes are equal.
+     * @param    other a Box3D object to be compared with this Box3D
+     * @return    true if this box is equal to the other box, false otherwise
+     */
+    public boolean equals(Box3D other){
+        return _base.equals(other.getBase()) && _length == other.getLength() && _width == other.getWidth() && _height == other.getHeight();            
+    }
+
+    /**
+     * This method moves the box in the (x,y,z) coordinate system to (x+dx,y+dy,z+dz) without changing the box dimensions
+     *
+     * @param   dx the addtion for coordinate x value
+     * @param   dy the addtion for coordinate y value
+     * @param   dz the addtion for coordinate z value
+     * @return  the new box in its new location
+     */
+
+    public Box3D move (double dx, double dy, double dz){ 
+        Point3D p = new Point3D(_base);
+        p.move(dx,dy,dz);
+        return new Box3D(p, _length, _width, _height);
+    }
+    /**
+     * This method calculates and returns the upper-right-back point of this box
+     * @return   upper-right-back point of this box 
+     */
+    public Point3D getUpRightBackPoint(){
+        double x = _base.getX() - _length;
+        double y = _base.getY() + _width;
+        double z = _base.getZ() + _height;
+        Point3D UpRightBackPoint = new Point3D(x,y,z);
+        return UpRightBackPoint;
+    }
+    /**
+     * This method calculates and returns the center point of this box
+     * @return   center point of this box 
+     */
+    public Point3D getCenter(){
+        double x = _base.getX() - _length/2.0;
+        double y = _base.getY() + _width/2.0;
+        double z = _base.getZ() + _height/2.0;
+        Point3D Center = new Point3D(x,y,z);
+        return Center;
+    }
+    /**
+     * This method computes the distance between two boxes based on the distance of their center points.
+     * @param   other a Box3D object whose center point will be compared with the center point of this Box3D
+     * @return   the distance between two Box3D objects 
+     */
+    public double distance(Box3D other){
+        Point3D p_center = other.getCenter();
+        double x =  p_center.getX();
+        double y =  p_center.getY();
+        double z =  p_center.getZ();
+        Point3D op_center = this.getCenter();
+        double distance = Math.sqrt(Math.pow(op_center.getX() - p_center.getX(),2) + Math.pow(op_center.getY() - p_center.getY(),2) + 
+                Math.pow(op_center.getZ() - p_center.getZ(),2));
+
+        return distance;  
+    }
+    /**
+     * This method calculates and returns the volume of the box
+     * @return   the volume of the box
+     */
+    public int getVolume(){
+        int volume = _length * _width * _height;
+        return volume;
+    }
+    /**
+     * This method calculates and returns the surface area of a box
+     * @return   the surface area of a Box3D object 
+     */
+    public int getSurfaceArea (){
+        int SurfaceArea = (_length *  _width + _height *  _width + _length * _height)*2;
+        return SurfaceArea;
+    }
+   /**
+     * This method determines whether this box has a greater volume in compare to other box.
+     * @param   other a Box3D object whose volume will be compared with the volume of this Box3D
+     * @return   true if this box has a greater volume compared to the other box, false otherwise 
+     */
+    public boolean isLargerCapacity(Box3D other){
+        if (this.getVolume() > other.getVolume()){
+            return true;
+        }
+        return false;
+    }
+   /**
+     * This method determines whether this box can contain the other box.
+     * @param   other a Box3D object to check if it can be contained within this box
+     * @return true if this box can contain the other box, false otherwise
+     */
+    public boolean contains(Box3D other){
+        if (_length * _width > other._length * other._width && _height * _width> other._height * other._width &&
+        _length * _height > other._length * other._height){
+            return true;
+        }
+        return false;
+
+    }
+   /**
+     * This method determines whether this box is above the other box.
+     * @param   other a Box3D object to check if it is under this box
+     * @return   true if this box  is above the other box, false otherwise 
+     */
+    public boolean isAbove(Box3D other){
+        Point3D p = this.getBase();
+        Point3D p2 = other.getUpRightBackPoint();
+        if (p.isAbove(p2)){ 
+            return true;
+        }
+        return false;
+
+    }
 }
