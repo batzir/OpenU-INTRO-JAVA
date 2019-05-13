@@ -15,7 +15,53 @@ public class Circle{
 
         // This program calculates the Inner Circle Radius:
         int InnerCRadius = (leftUpY - RightDownY)/2;
-      
+        
+***************************************************************************************************************************
+import java.util.Scanner;
+//This program solves a system of 2 linear equations.
+public class Equations{ 
+
+    public static void main (String [] args){
+        Scanner Solution = new Scanner (System.in);
+
+        System.out.println ("This program solves a system of 2 linear equations");
+        System.out.println ("Enter the coefficients a11 a12 a21 a22 b1 b2");
+
+        // Geting 6 inputs (a11 a12 a21 a22 b1 b2) from the user: 
+        int a11 = Solution.nextInt();
+        int a12 = Solution.nextInt();
+        int a21 = Solution.nextInt();
+        int a22 = Solution.nextInt();
+        int b1 = Solution.nextInt();
+        int b2 = Solution.nextInt();                      
+        System.out.println("Eq1: " + a11 + "*" + "x1" + "+" + a12 + "*" + "x2" + "=" + b1);
+        System.out.println("Eq2: " + a21 + "*" + "x1" + "+" + a22 + "*" + "x2" + "=" + b2);
+
+        // There are three kinds of solutions for the equations:
+        // 1. single solution
+        // 2. Many solutions 
+        // 3.No solution        
+        if ((a11*a22 - a12*a21) != 0) {
+            double x1= (b1*a22 - b2*a12)/ ((double)(a11 * a22 - a12*a21));
+            double x2= (b2*a11 - b1*a21)/ ((double)(a11 * a22 - a12*a21));
+
+            // Rounding for 3 number after the point.
+            x1 = Math.round(x1*1000)/1000.0;
+            x2 = Math.round(x2*1000)/1000.0;
+            System.out.printf("Single solution: (" + x1 + "," + x2 + ") "); 
+        }
+        else if ((b2*a11-b1*a21 == 0) && (b1*a22-b2*a12 == 0) &&
+        !((a11 == 0 && a12 == 0 && b1!=0) || (a21==0 && a22==0 && b2!=0))
+        ){
+            System.out.println("Many solutions ");
+        }
+        else{
+            System.out.println("No solution ");
+        }
+
+    }
+}
+           
 
         // This program calculates the Inner Circle Area:
         double p = Math.PI;
